@@ -32,8 +32,8 @@ public class App
     private final static String SUBSCRIPTION = "83e686f6-963b-4e64-bff4-99dc369cb4ec";
     private final static String RESOURCE_GROUP = "pelasne-oms";
     private final static String WORKSPACE = "pelasne-oms";
-    private final static String WORKSPACE_ID = "c2463a93-36a9-47be-bd29-50a2f70526eb";
-    private final static String WORKSPACE_KEY = "HVdZ4xSFP8Y311b4w4Js2ya4c6ZxvwOzGX4lYqgVBT4A7gVoNYppr+x8oPLRxi8BNd7/DeNVZQ32CbNCClzCfw==";
+    private final static String WORKSPACE_ID = "7fbea91c-ae1e-4521-8f72-590f6e12f6b2";
+    private final static String WORKSPACE_KEY = "DXUVDTQhlT+0RKxa184eQoI0xCGK9Xw0XtN3KxJsAlLomWYMDqqS8LWfnTEFlyqLNbBqMRta0TgVcOf5ib4nDg==";
 
     public static void main( String[] args ) throws Exception
     {
@@ -90,11 +90,12 @@ public class App
     public static void post() throws Exception
     {
 
-	// variables
+	// variables (note time is RFC-1123 but requires the exact # of digits)
 	String body = "{ \"field1\": \"stuff\", \"field2\": \"things\" }";
-        String ts = DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now(ZoneId.of("GMT")));
+        String ts = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss O").format(ZonedDateTime.now(ZoneId.of("GMT")));
 	String code = "POST\n" + body.length() + "\napplication/json\nx-ms-date:" + ts + "\n/api/logs";
-	
+	System.out.println(code);
+
 	// create singature
 	byte[] key = Base64.getDecoder().decode(WORKSPACE_KEY);
 	Mac hasher = Mac.getInstance("HmacSHA256");
@@ -107,6 +108,7 @@ public class App
 	HttpURLConnection con = (HttpURLConnection) url.openConnection();
 	con.setDoOutput(true);
 	con.setRequestMethod("POST");
+        con.setRequestProperty("Accept", "application/json");
 	con.setRequestProperty("Content-Type", "application/json");
 	con.setRequestProperty("Log-Type","demo");
 	con.setRequestProperty("x-ms-date", ts);
